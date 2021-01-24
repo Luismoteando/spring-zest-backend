@@ -35,6 +35,17 @@ public class SessionResourceIT {
     private String contextPath;
 
     @Test
+    void testReadSession() {
+        String id = this.sessionRepository.findAll().get(0).getId();
+        this.webTestClient
+                .get().uri(contextPath + SESSIONS + ID, id)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(SessionDto.class)
+                .value(Assertions::assertNotNull);
+    }
+
+    @Test
     void testReadAllSessions() {
         this.webTestClient
                 .get().uri(contextPath + SESSIONS)

@@ -31,6 +31,12 @@ public class SessionController {
         this.sessionExerciseReactRepository = sessionExerciseReactRepository;
     }
 
+    public Mono<SessionDto> readSession(String id) {
+        return this.sessionReactRepository.findById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException("Session code (" + id + ")")))
+                .map(SessionDto::new);
+    }
+
     public Flux<SessionDto> readAllSessions() {
         return this.sessionReactRepository.findAll()
                 .switchIfEmpty(Flux.error(new BadRequestException("Bad Request")))
