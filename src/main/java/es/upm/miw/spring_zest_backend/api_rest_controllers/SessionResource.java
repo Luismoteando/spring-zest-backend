@@ -25,6 +25,12 @@ public class SessionResource {
         this.sessionController = sessionController;
     }
 
+    @GetMapping(value = ID)
+    public Mono<SessionDto> read(@PathVariable String id) {
+        return this.sessionController.readSession(id)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
     @GetMapping
     public Flux<SessionDto> readAll() {
         return this.sessionController.readAllSessions()
