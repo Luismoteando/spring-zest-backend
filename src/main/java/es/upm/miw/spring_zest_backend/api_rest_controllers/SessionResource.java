@@ -16,6 +16,7 @@ import javax.validation.Valid;
 public class SessionResource {
 
     public static final String SESSIONS = "/sessions";
+    public static final String ID = "/{id}";
 
     private SessionController sessionController;
 
@@ -33,6 +34,12 @@ public class SessionResource {
     @PostMapping
     public Mono<SessionDto> createSession(@Valid @RequestBody SessionCreationDto sessionCreationDto) {
         return this.sessionController.createSession(sessionCreationDto)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @PutMapping(value = ID)
+    public Mono<SessionDto> updateSession(@PathVariable String id, @RequestBody SessionCreationDto sessionDto) {
+        return this.sessionController.updateSession(id, sessionDto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 }

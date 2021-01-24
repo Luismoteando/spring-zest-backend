@@ -1,6 +1,7 @@
 package es.upm.miw.spring_zest_backend.business_controllers;
 
 import es.upm.miw.spring_zest_backend.documents.Session;
+import es.upm.miw.spring_zest_backend.documents.SessionExercise;
 import es.upm.miw.spring_zest_backend.dtos.SessionCreationDto;
 import es.upm.miw.spring_zest_backend.dtos.SessionDto;
 import es.upm.miw.spring_zest_backend.exceptions.BadRequestException;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Controller
 public class SessionController {
@@ -53,5 +56,26 @@ public class SessionController {
         }
         return Mono.when(sessionExercises)
                 .then(this.sessionReactRepository.save(session).map(SessionDto::new));
+    }
+
+    public Mono<SessionDto> updateSession(String id, SessionCreationDto sessionCreationDto) {
+        List<SessionExercise> sessionExercises = this.sessionExerciseReactRepository
+                .findAllById(sessionCreationDto.getSessionExerciseIds())
+                .switchIfEmpty(Mono.error(
+                        new NotFoundException(SESSION_EXERCISES_NOT_FOUND + sessionCreationDto.getSessionExerciseIds())))
+                .collectList()
+                .block();
+
+        Mono<Session> session = this.sessionReactRepository.findById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException("Session id" + id)))
+                .map(session1 -> {
+                    session1.setTitle(sessionCreationDto.getTitle());
+                    session1.setStart(sessionCreationDto.getStart());
+                    session1.setSessionExercises(sessionExercises);
+                    return session1;
+                });
+
+        return Mono.when(session)
+                .then(this.sessionReactRepository.saveAll(session).next().map(SessionDto::new));
     }
 }
