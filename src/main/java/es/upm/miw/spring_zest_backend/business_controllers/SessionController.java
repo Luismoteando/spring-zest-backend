@@ -28,13 +28,13 @@ public class SessionController {
         this.sessionExerciseReactRepository = sessionExerciseReactRepository;
     }
 
-    Flux<SessionDto> readAllSessions() {
+    public Flux<SessionDto> readAllSessions() {
         return this.sessionReactRepository.findAll()
                 .switchIfEmpty(Flux.error(new BadRequestException("Bad Request")))
                 .map(SessionDto::new);
     }
 
-    Mono<SessionDto> createSession(SessionCreationDto sessionCreationDto) {
+    public Mono<SessionDto> createSession(SessionCreationDto sessionCreationDto) {
         Mono<Void> sessionExercises;
         Session session = Session.builder()
                 .title(sessionCreationDto.getTitle())
