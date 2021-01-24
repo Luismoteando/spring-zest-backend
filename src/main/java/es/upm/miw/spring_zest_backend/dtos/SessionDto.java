@@ -23,7 +23,8 @@ public class SessionDto {
         // Empty for framework
     }
 
-    public SessionDto(String title, Date start, List<String> sessionExerciseIds) {
+    public SessionDto(String id, String title, Date start, List<String> sessionExerciseIds) {
+        this.id = id;
         this.title = title;
         this.start = start;
         this.sessionExerciseIds = sessionExerciseIds;
@@ -31,12 +32,17 @@ public class SessionDto {
 
     public SessionDto(Session session) {
         this(
+                session.getId(),
                 session.getTitle(),
                 session.getStart(),
                 session.getSessionExercises().stream()
                         .map(SessionExercise::getId)
                         .collect(Collectors.toList())
         );
+    }
+
+    public String getId() {
+        return this.id;
     }
 
     public String getTitle() {
