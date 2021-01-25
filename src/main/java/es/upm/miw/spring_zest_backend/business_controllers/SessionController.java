@@ -84,4 +84,12 @@ public class SessionController {
         return Mono.when(session)
                 .then(this.sessionReactRepository.saveAll(session).next().map(SessionDto::new));
     }
+
+    public Mono<Void> deleteSession(String id) {
+        Mono<Session> session = this.sessionReactRepository.findById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException(("Session id" + id))));
+
+        return Mono.when(session)
+                .then(this.sessionReactRepository.deleteById(id));
+    }
 }

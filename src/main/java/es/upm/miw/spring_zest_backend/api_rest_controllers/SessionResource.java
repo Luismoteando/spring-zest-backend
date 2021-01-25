@@ -48,4 +48,10 @@ public class SessionResource {
         return this.sessionController.updateSession(id, sessionDto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
+
+    @DeleteMapping(value = ID)
+    public Mono<Void> delete(@PathVariable String id) {
+        return this.sessionController.deleteSession(id)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
 }
