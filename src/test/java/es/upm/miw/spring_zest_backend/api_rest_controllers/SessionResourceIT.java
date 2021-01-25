@@ -14,10 +14,12 @@ import org.springframework.web.reactive.function.BodyInserters;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static es.upm.miw.spring_zest_backend.api_rest_controllers.SessionResource.ID;
 import static es.upm.miw.spring_zest_backend.api_rest_controllers.SessionResource.SESSIONS;
+import static org.junit.Assert.assertEquals;
 
 @ApiTestConfig
 public class SessionResourceIT {
@@ -86,5 +88,14 @@ public class SessionResourceIT {
                         )
                 ).exchange().expectStatus().isOk().expectBody(SessionDto.class)
                 .value(Assertions::assertNotNull);
+    }
+
+    @Test
+    void testDeleteSession() {
+        String id = this.sessionRepository.findAll().get(0).getId();
+        this.webTestClient
+                .delete().uri(contextPath + SESSIONS + ID, id)
+                .exchange().expectStatus().isOk();
+        assertEquals(Optional.empty(), this.sessionRepository.findById(id));
     }
 }
